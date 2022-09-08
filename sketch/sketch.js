@@ -11,7 +11,7 @@ const hookLevel = 400;
 const skraldAntal = 75;
 const fiskAntal = 50;
 
-let hitboxShow = true;
+let hitboxShow = false;
 
 function preload() {
   skraldImg.push(loadImage("assets/Trash/straw.png"));
