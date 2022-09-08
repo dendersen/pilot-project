@@ -1,12 +1,18 @@
 class Krog {
-  constructor(img, x, y) {
+  img: p5.Image;
+  x: number;
+  y: number;
+  hookedX: number;
+  w: number;
+  h: number;
+  hooked: WaterItems[] = [];
+  constructor(img: p5.Image, x: number, y: number) {
     this.img = img;
     this.x = x;
     this.hookedX = x;
     this.y = y;
     this.w = 128;
     this.h = 128;
-    this.hooked = [];
   }
 
   tick() {
@@ -29,7 +35,7 @@ class Krog {
     if (hitboxShow) ellipse(this.hookedX + 64, this.y + 64, 64);
   }
 
-  addHook(obj) {
+  addHook(obj: WaterItems) {
     obj.hooked = true;
     this.hooked.push(obj);
   }
