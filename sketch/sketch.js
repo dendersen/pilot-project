@@ -74,8 +74,14 @@ function draw() {
   }
 
   push();
-  textSize(30);
+  textSize(75);
   let txt = countPoints();
+  rect(
+    300 - textWidth(`${txt}`) / 2 - 10,
+    360 + offset,
+    textWidth(`${txt}`) + 20,
+    75
+  );
   text(txt, 300 - textWidth(`${txt}`) / 2, 426 + offset);
   pop();
   console.log(skrald.length);
