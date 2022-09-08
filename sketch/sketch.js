@@ -73,6 +73,11 @@ function draw() {
     krog.hooked[i].show();
   }
 
+  push();
+  textSize(30);
+  let txt = countPoints();
+  text(txt, 300 - textWidth(`${txt}`) / 2, 426 + offset);
+  pop();
   console.log(skrald.length);
 }
 
@@ -87,6 +92,14 @@ function checkHook() {
   } else {
     offset -= 2;
   }
+}
+
+function countPoints() {
+  let sum = 0;
+  for (let i = 0; i < krog.hooked.length; i++) {
+    sum += krog.hooked[i].points;
+  }
+  return sum;
 }
 
 function setupTrash() {
