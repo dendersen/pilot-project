@@ -1,33 +1,77 @@
+declare function loadSound(path: string): p5.SoundFile;
+
 let offset: number = -250;
 let fishermanImg: p5.Image;
 let krogImg: p5.Image;
-let krog: Krog;
+let hook: Krog;
 let skraldImg: p5.Image[] = [];
 let skrald: Skrald[] = [];
 let backgroundImg: p5.Image;
 let fisk: Fisk[] = [];
-let fiskImg: p5.Image[] = [];
+let fiskImg: Array<p5.Image>[] = [];
+let deadFiskImg: p5.Image[] = [];
+let deadFisk: DeadFisk[] = [];
+let startImg: p5.Image[] = [];
+//TODO fix frame
+let maxFrame1: number = 60;
+let maxFrame2: number = 60;
+let currentFrame: number = 0;
+
+let mySound: p5.SoundFile;
 const hookLevel: number = 400;
 const skraldAntal: number = 75;
 const fiskAntal: number = 50;
-
-let hitboxShow: boolean = false;
-
+const deadAntal: number = 50;
+const hitboxShow: boolean = true;
+enum playStateList {
+  menu = 0,
+  play = 1,
+  startLoading = 2,
+  gameLoading = 3,
+}
+let playState = playStateList.startLoading;
+let knap: Knap;
 function preload() {
+  mySound = loadSound("sketch/assets/Music/bagground.mp3");
+
+  startImg.push(loadImage("sketch/assets/Start/start1.png"));
+  startImg.push(loadImage("sketch/assets/Start/start2.png"));
+  startImg.push(loadImage("sketch/assets/Start/start0.gif"));
+  startImg.push(loadImage("sketch/assets/Start/start3.gif"));
+
   skraldImg.push(loadImage("sketch/assets/Trash/oil barrel.png"));
   skraldImg.push(loadImage("sketch/assets/Trash/tire.png"));
   skraldImg.push(loadImage("sketch/assets/Trash/trashbag.png"));
+  skraldImg.push(loadImage("sketch/assets/Trash/straw.png"));
+  skraldImg.push(loadImage("sketch/assets/Trash/plastich bag.png"));
 
-  fiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish1.png"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish2.png"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish3.png"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish4.png"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead turtle.png"));
+  deadFiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish1.png"));
+  deadFiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish2.png"));
+  deadFiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish3.png"));
+  deadFiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead fish4.png"));
+  deadFiskImg.push(loadImage("sketch/assets/Fisk/Deadfish/dead turtle.png"));
 
-  fiskImg.push(loadImage("sketch/assets/Fisk/Livefish/fish1 animation.gif"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Livefish/fish2 animation.gif"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Livefish/fish3 animation.gif"));
-  fiskImg.push(loadImage("sketch/assets/Fisk/Livefish/turtle animation.gif"));
+  let fisk1: p5.Image[] = [];
+  fisk1.push(loadImage("sketch/assets/Fisk/Livefish/fish1 animation.gif"));
+  fisk1.push(loadImage("sketch/assets/Fisk/Livefish/fish1 animationflip.gif"));
+  fiskImg.push(fisk1);
+
+  let fisk2: p5.Image[] = [];
+  fisk2.push(loadImage("sketch/assets/Fisk/Livefish/fish2 animation.gif"));
+  fisk2.push(loadImage("sketch/assets/Fisk/Livefish/fish2 animationflip.gif"));
+  fiskImg.push(fisk2);
+
+  let fisk3: p5.Image[] = [];
+  fisk3.push(loadImage("sketch/assets/Fisk/Livefish/fish3 animation.gif"));
+  fisk3.push(loadImage("sketch/assets/Fisk/Livefish/fish3 animationflip.gif"));
+  fiskImg.push(fisk3);
+
+  let turtle: p5.Image[] = [];
+  turtle.push(loadImage("sketch/assets/Fisk/Livefish/turtle animation.gif"));
+  turtle.push(
+    loadImage("sketch/assets/Fisk/Livefish/turtle animationflip.gif")
+  );
+  fiskImg.push(turtle);
 
   fishermanImg = loadImage("sketch/assets/fisherman.png");
   krogImg = loadImage("sketch/assets/Hook.gif");
@@ -36,12 +80,41 @@ function preload() {
 function setup() {
   createCanvas(640, 800);
   setupTrash();
-  krog = new Krog(krogImg, 640 / 2, hookLevel);
+  knap = new Knap(243, 294, 176, 84);
+  hook = new Krog(krogImg, 640 / 2, hookLevel);
   // noLoop();
 }
 
 function draw() {
-  background(0);
+  if (playState === playStateList.startLoading) {
+    image(startImg[playState], 0, 0);
+    if (currentFrame === maxFrame1) {
+      playState = playStateList.menu;
+      currentFrame = 0;
+      return;
+    }
+    currentFrame++;
+    return;
+  }
+
+  if (playState === playStateList.menu) {
+    background(220);
+    image(startImg[knap.bagground()], 0, 0);
+    knap.hover();
+    return;
+  }
+
+  if (playState === playStateList.gameLoading) {
+    image(startImg[playState], 0, 0);
+    if (currentFrame === maxFrame2) {
+      playState = playStateList.play;
+      currentFrame = 0;
+
+      return;
+    }
+    currentFrame++;
+    return;
+  }
   checkHook();
   image(backgroundImg, 0, 0 + offset);
 
@@ -50,70 +123,91 @@ function draw() {
   for (let i = 0; i < skrald.length; i++) {
     skrald[i].tick();
     skrald[i].show();
-    if (skrald[i].collect(krog)) {
-      krog.addHook(skrald[i]);
+    if (skrald[i].collect(hook)) {
+      hook.addHook(skrald[i]);
       skrald.splice(i, 1);
     }
   }
   for (let i = 0; i < fisk.length; i++) {
     fisk[i].tick();
+    fisk[i].move();
     fisk[i].show();
-    if (fisk[i].collect(krog)) {
-      krog.addHook(fisk[i]);
+    if (fisk[i].collect(hook)) {
+      hook.addHook(fisk[i]);
       fisk.splice(i, 1);
     }
   }
+  for (let i = 0; i < deadFisk.length; i++) {
+    deadFisk[i].tick();
+    deadFisk[i].show();
+    if (deadFisk[i].collect(hook)) {
+      hook.addHook(deadFisk[i]);
+      deadFisk.splice(i, 1);
+    }
+  }
+  hook.tick();
+  hook.show();
 
-  krog.tick();
-  krog.show();
-
-  for (let i = 0; i < krog.hooked.length; i++) {
-    krog.hooked[i].tick();
-    krog.hooked[i].show();
+  for (let i = 0; i < hook.hooked.length; i++) {
+    hook.hooked[i].tick();
+    hook.hooked[i].show();
   }
 
   push();
-  textSize(30);
+  textSize(75);
   let txt = countPoints();
+
+  rect(
+    300 - textWidth(`${txt}`) / 2 - 10,
+    360 + offset,
+    textWidth(`${txt}`) + 20,
+    75
+  );
   text(txt, 300 - textWidth(`${txt}`) / 2, 426 + offset);
   pop();
 }
 
 function mousePressed() {
+  knap.clicked();
+
+  //TODO remove
+
   console.log("NON-offset", mouseX, mouseY);
   console.log("offset", mouseX, mouseY - offset);
 }
 
 function checkHook() {
   if (offset > -250) {
-    // console.log(countPoints());
+    mySound.stop();
     return;
   }
-  if (krog.hooked.length > 0) {
-    offset += 5;
-  } else {
-    offset -= 2;
-  }
+  if (offset < -9600) hook.up = true;
+  if (hook.hooked.length > 0) hook.up = true;
+  hook.up ? (offset += 5) : (offset -= 3);
 }
 
 function setupTrash() {
-  for (let i = -1; i < skraldAntal; i++) {
+  for (let i = 0; i < skraldAntal; i++) {
+    let ran = Math.floor(random(skraldImg.length));
+
     skrald.push(
-      new Skrald(
-        skraldImg,
-        random(width - 64),
-        random(799, 10240),
-        Math.floor(random(skraldImg.length))
-      )
+      new Skrald(skraldImg[ran], random(width - 64), random(799, 10240), ran)
     );
   }
-  for (let i = -1; i < fiskAntal; i++) {
+  for (let i = 0; i < fiskAntal; i++) {
+    let ran = Math.floor(random(fiskImg.length));
     fisk.push(
-      new Fisk(
-        fiskImg,
+      new Fisk(fiskImg[ran], random(width - 64), random(799, 10240), ran)
+    );
+  }
+  for (let i = 0; i < deadAntal; i++) {
+    let ran = Math.floor(random(deadFiskImg.length));
+    deadFisk.push(
+      new DeadFisk(
+        deadFiskImg[ran],
         random(width - 64),
         random(799, 10240),
-        Math.floor(random(fiskImg.length))
+        ran
       )
     );
   }
@@ -121,7 +215,7 @@ function setupTrash() {
 
 function countPoints(): number {
   let sum: number = 0;
-  krog.hooked.forEach((item) => {
+  hook.hooked.forEach((item) => {
     sum += item.points;
   });
   return sum;

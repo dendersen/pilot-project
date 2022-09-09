@@ -5,6 +5,7 @@ class Krog {
   hookedX: number;
   w: number;
   h: number;
+  up: boolean;
   hooked: WaterItems[] = [];
   constructor(img: p5.Image, x: number, y: number) {
     this.img = img;
@@ -13,12 +14,13 @@ class Krog {
     this.y = y;
     this.w = 128;
     this.h = 128;
+    this.up = false;
   }
 
   tick() {
-    if (mouseX > width - 64) {
+    if (mouseX >= width - 32) {
       this.x = width - 64;
-    } else if (mouseX < 0 + 64) {
+    } else if (mouseX <= 0 + 32) {
       this.x = 0;
     } else {
       this.x = mouseX - 75 / 2;

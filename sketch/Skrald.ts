@@ -2,8 +2,8 @@
 class Skrald extends WaterItems {
   points: number;
 
-  constructor(img: p5.Image[], x: number, y: number, id: number) {
-    super(img, x, y, id);
+  constructor(img: p5.Image, x: number, y: number, id: number) {
+    super(x, y, id, img);
     this.points = 1;
   }
 }

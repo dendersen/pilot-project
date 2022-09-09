@@ -1,5 +1,5 @@
 class WaterItems {
-  img: p5.Image[];
+  img: p5.Image;
   x: number;
   spawnY: number;
   y: number;
@@ -8,7 +8,9 @@ class WaterItems {
   w: number;
   h: number;
   points: number;
-  constructor(img: p5.Image[], x: number, y: number, id: number) {
+  flip: boolean;
+
+  constructor(x: number, y: number, id: number, img: p5.Image) {
     this.img = img;
     this.x = x;
     this.spawnY = y;
@@ -21,13 +23,13 @@ class WaterItems {
 
   tick() {
     if (this.hooked) {
-      this.x = krog.hookedX;
-      this.y = krog.y;
+      this.x = hook.hookedX;
+      this.y = hook.y;
     } else this.y = offset + this.spawnY;
   }
 
   show() {
-    image(this.img[this.id], this.x, this.y, this.w, this.h);
+    image(this.img, this.x, this.y, this.w, this.h);
     if (hitboxShow) ellipse(this.x + 64, this.y + 64, 64);
   }
 
