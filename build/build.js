@@ -117,6 +117,10 @@ var Krog = (function () {
         obj.hooked = true;
         this.hooked.push(obj);
     };
+    Krog.prototype.clearHook = function () {
+        this.hooked = [];
+        this.up = false;
+    };
     return Krog;
 }());
 var Skrald = (function (_super) {
@@ -175,8 +179,9 @@ var fiskImg = [];
 var deadFiskImg = [];
 var deadFisk = [];
 var startImg = [];
-var maxFrame1 = 60;
+var maxFrame1 = 59;
 var maxFrame2 = 60;
+var maxFrame3 = 60;
 var currentFrame = 0;
 var mySound;
 var hookLevel = 400;
@@ -190,6 +195,7 @@ var playStateList;
     playStateList[playStateList["play"] = 1] = "play";
     playStateList[playStateList["startLoading"] = 2] = "startLoading";
     playStateList[playStateList["gameLoading"] = 3] = "gameLoading";
+    playStateList[playStateList["revsegameLoading"] = 4] = "revsegameLoading";
 })(playStateList || (playStateList = {}));
 var playState = playStateList.startLoading;
 var knap;
@@ -199,6 +205,7 @@ function preload() {
     startImg.push(loadImage("sketch/assets/Start/start2.png"));
     startImg.push(loadImage("sketch/assets/Start/start0.gif"));
     startImg.push(loadImage("sketch/assets/Start/start3.gif"));
+    startImg.push(loadImage("sketch/assets/Start/start4.gif"));
     skraldImg.push(loadImage("sketch/assets/Trash/oil barrel.png"));
     skraldImg.push(loadImage("sketch/assets/Trash/tire.png"));
     skraldImg.push(loadImage("sketch/assets/Trash/trashbag.png"));
@@ -238,7 +245,7 @@ function setup() {
 function draw() {
     if (playState === playStateList.startLoading) {
         image(startImg[playState], 0, 0);
-        if (currentFrame === maxFrame1) {
+        if (currentFrame === maxFrame1 - 1) {
             playState = playStateList.menu;
             currentFrame = 0;
             return;
@@ -256,6 +263,16 @@ function draw() {
         image(startImg[playState], 0, 0);
         if (currentFrame === maxFrame2) {
             playState = playStateList.play;
+            currentFrame = 0;
+            return;
+        }
+        currentFrame++;
+        return;
+    }
+    if (playState === playStateList.revsegameLoading) {
+        image(startImg[playState], 0, 0);
+        if (currentFrame === maxFrame3) {
+            playState = playStateList.menu;
             currentFrame = 0;
             return;
         }
@@ -307,6 +324,18 @@ function mousePressed() {
     knap.clicked();
     console.log("NON-offset", mouseX, mouseY);
     console.log("offset", mouseX, mouseY - offset);
+}
+function keyPressed() {
+    if (playState === playStateList.play)
+        if (keyCode === 32) {
+            skrald = [];
+            deadFisk = [];
+            fisk = [];
+            setupTrash();
+            hook.clearHook();
+            offset = -250;
+            playState = playStateList.revsegameLoading;
+        }
 }
 function checkHook() {
     if (offset > -250) {

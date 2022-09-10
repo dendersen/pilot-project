@@ -13,8 +13,9 @@ let deadFiskImg: p5.Image[] = [];
 let deadFisk: DeadFisk[] = [];
 let startImg: p5.Image[] = [];
 //TODO fix frame
-let maxFrame1: number = 60;
+let maxFrame1: number = 59;
 let maxFrame2: number = 60;
+let maxFrame3: number = 60;
 let currentFrame: number = 0;
 
 let mySound: p5.SoundFile;
@@ -28,8 +29,9 @@ enum playStateList {
   play = 1,
   startLoading = 2,
   gameLoading = 3,
+  revsegameLoading = 4,
 }
-let playState = playStateList.startLoading;
+let playState: playStateList = playStateList.startLoading;
 let knap: Knap;
 function preload() {
   mySound = loadSound("sketch/assets/Music/bagground.mp3");
@@ -38,6 +40,7 @@ function preload() {
   startImg.push(loadImage("sketch/assets/Start/start2.png"));
   startImg.push(loadImage("sketch/assets/Start/start0.gif"));
   startImg.push(loadImage("sketch/assets/Start/start3.gif"));
+  startImg.push(loadImage("sketch/assets/Start/start4.gif"));
 
   skraldImg.push(loadImage("sketch/assets/Trash/oil barrel.png"));
   skraldImg.push(loadImage("sketch/assets/Trash/tire.png"));
@@ -88,7 +91,7 @@ function setup() {
 function draw() {
   if (playState === playStateList.startLoading) {
     image(startImg[playState], 0, 0);
-    if (currentFrame === maxFrame1) {
+    if (currentFrame === maxFrame1 - 1) {
       playState = playStateList.menu;
       currentFrame = 0;
       return;
@@ -115,6 +118,19 @@ function draw() {
     currentFrame++;
     return;
   }
+
+  if (playState === playStateList.revsegameLoading) {
+    image(startImg[playState], 0, 0);
+    if (currentFrame === maxFrame3) {
+      playState = playStateList.menu;
+      currentFrame = 0;
+
+      return;
+    }
+    currentFrame++;
+    return;
+  }
+
   checkHook();
   image(backgroundImg, 0, 0 + offset);
 
@@ -174,6 +190,19 @@ function mousePressed() {
 
   console.log("NON-offset", mouseX, mouseY);
   console.log("offset", mouseX, mouseY - offset);
+}
+
+function keyPressed() {
+  if (playState === playStateList.play)
+    if (keyCode === 32) {
+      skrald = [];
+      deadFisk = [];
+      fisk = [];
+      setupTrash();
+      hook.clearHook();
+      offset = -250;
+      playState = playStateList.revsegameLoading;
+    }
 }
 
 function checkHook() {

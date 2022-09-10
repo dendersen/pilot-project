@@ -41,4 +41,9 @@ class Krog {
     obj.hooked = true;
     this.hooked.push(obj);
   }
+
+  clearHook() {
+    this.hooked = [];
+    this.up = false;
+  }
 }
