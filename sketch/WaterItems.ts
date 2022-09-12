@@ -34,7 +34,6 @@ class WaterItems {
   }
 
   collect(obj: Krog) {
-    if (dist(this.x, this.y, obj.hookedX, obj.y) < 64) return true;
-    return false;
+    return (dist(this.x, this.y, obj.hookedX, obj.y) < 64)
   }
 }

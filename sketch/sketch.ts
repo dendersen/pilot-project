@@ -217,6 +217,7 @@ function checkHook() {
 }
 
 function setupTrash() {
+  randomSeed(+new Date)
   for (let i = 0; i < skraldAntal; i++) {
     let ran = Math.floor(random(skraldImg.length));
 

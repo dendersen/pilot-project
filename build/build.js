@@ -23,9 +23,7 @@ var WaterItems = (function () {
             ellipse(this.x + 64, this.y + 64, 64);
     };
     WaterItems.prototype.collect = function (obj) {
-        if (dist(this.x, this.y, obj.hookedX, obj.y) < 64)
-            return true;
-        return false;
+        return (dist(this.x, this.y, obj.hookedX, obj.y) < 64);
     };
     return WaterItems;
 }());
@@ -350,6 +348,7 @@ function checkHook() {
     hook.up ? (offset += 5) : (offset -= 3);
 }
 function setupTrash() {
+    randomSeed(+new Date);
     for (var i = 0; i < skraldAntal; i++) {
         var ran = Math.floor(random(skraldImg.length));
         skrald.push(new Skrald(skraldImg[ran], random(width - 64), random(799, 10240), ran));
