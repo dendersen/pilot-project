@@ -66,8 +66,8 @@ var Fisk = (function (_super) {
             this.Flip();
         }
         if (this.x <= 0 - 10) {
-            this.Flip();
             this.xVec *= -1;
+            this.Flip();
         }
         this.x += this.xVec;
     };
@@ -307,6 +307,7 @@ function draw() {
             deadFisk.splice(i, 1);
         }
     }
+    console.log(offset);
     hook.tick();
     hook.show();
     for (var i = 0; i < hook.hooked.length; i++) {

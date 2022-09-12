@@ -161,6 +161,7 @@ function draw() {
       deadFisk.splice(i, 1);
     }
   }
+  console.log(offset)
   hook.tick();
   hook.show();
 

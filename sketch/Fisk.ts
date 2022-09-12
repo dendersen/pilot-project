@@ -16,8 +16,8 @@ class Fisk extends WaterItems {
       this.Flip();
     }
     if (this.x <= 0 - 10) {
-      this.Flip();
       this.xVec *= -1;
+      this.Flip();
     }
     this.x += this.xVec;
   }
